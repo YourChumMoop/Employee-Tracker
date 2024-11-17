@@ -26,11 +26,9 @@ export const newEmp = (first_name:string,last_name:string,role_id:string,manager
                         console.log(err);
                     } else if (result) {
                         console.log(`Employee ${first_name} ${last_name} Added!`);
-                    }
-                    
+                    }                  
                 }
-            )
- 
+            );
 };
 
 //returns an array of objects that contain every employee's full name and id.
@@ -88,6 +86,19 @@ export async function updateEmployeeRole(empId:number,roleId:number) {
             console.log("Role Updated!");
         }
     });
+};
+
+export async function newDept(deptName:string) {
+    pool.quary(`INSERT INTO department (name) ` + 
+                `VALUES ($1)`,
+                [deptName], (err: Error, result: QueryResult) => {
+                    if (err) {
+                        console.log(err);
+                    } else if (result) {
+                        console.log(`${deptName} Department Added!`);
+                    }                  
+                }
+            );
 }
 //UPDATE function
 // export const updateQ 

@@ -1,7 +1,7 @@
 import inquirer from "inquirer";
 import { QueryResult } from 'pg';
 import { pool, connectToDb } from '../connection.js';
-import { viewTable, updateEmployeeRole, currentEmployees, currentRoles, newEmp,} from './sqlQueries.js';
+import { viewTable, updateEmployeeRole, currentEmployees, currentRoles, newEmp, newDept} from './sqlQueries.js';
 await connectToDb();
 
 //TODO create a mainMenu() where the program asks it's first question and goes back to
@@ -42,7 +42,7 @@ class Cli {
                     viewTable('department');
                     break;
                 case 'Add Departments':
-                    //TODO add addDepartment()
+                    this.addDepartmentCli();
                     break;
                 case 'View All Roles':
                     viewTable('role');
@@ -102,7 +102,7 @@ class Cli {
                 type: 'list',
                 name: 'employee',
                 message: 'Select Employee to Update: ',
-                choices: curRoles
+                choices: curEmp
             },
             {
                 type: 'list',
@@ -115,4 +115,18 @@ class Cli {
             updateEmployeeRole(res.employee,res.newRole);
         })
     };
+
+    async addDepartmentCli(){
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'newDept',
+                message: 'Name of New Department: ',
+            }
+        ])
+        .then((res) => {
+            newDept(res.newDept);
+            this.mainMenu;
+        });
+    }
 };
