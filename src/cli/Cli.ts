@@ -1,7 +1,7 @@
 import inquirer from "inquirer";
 import { QueryResult } from 'pg';
 import { pool, connectToDb } from '../connection.js';
-import { buildViewQ, newEmpQ } from './sqlQueries.js';
+import { viewTable, updateEmployeeRole, currentEmployees, currentRoles, newEmp,} from './sqlQueries.js';
 await connectToDb();
 
 //TODO create a mainMenu() where the program asks it's first question and goes back to
@@ -30,22 +30,22 @@ class Cli {
             // Switch case statement for selecting from main menu
             switch (res.action) {
                 case 'View All Employees':
-                    this.viewEmployees();
+                    viewTable('employee');
                     break;
                 case 'Add Employee':
-                    //TODO add newEmployee()
+                    this.newEmployeeCli();
                     break;
                 case 'Update Employee Role':
-                    //TODO add updateEmployee()
+                    this.updateEmployeeRoleCli();
                     break;
                 case 'View All Departments':
-                    //TODO add viewDepartments()
+                    viewTable('department');
                     break;
                 case 'Add Departments':
                     //TODO add addDepartment()
                     break;
                 case 'View All Roles':
-                    //TODO viewRoles()
+                    viewTable('role');
                     break;
                 case 'Add A Roll':
                     //TODO addRoll()
@@ -56,34 +56,13 @@ class Cli {
         })
     };
     //
-    viewEmployees(): void {
-        //make a postgres query to select the employee table, then view it 
-        pool.quary(buildViewQ('employee') , (err: Error, result: QueryResult) => {
-            if (err) {
-                console.log(err);
-            } else if (result) {
-                console.table(result.rows);
-            }
-            this.mainMenu();
-        })
-    };
+
 
     // Inquire a series of questions to build and add a new employee to the database
-    newEmployee(): void {
-        const currentRoles = pool.quary('SELECT title FROM role', (err:Error, result: QueryResult) => {
-            if (err) { 
-                console.log(err);
-            } else if (result) {
-                return result;
-            }
-        });
-        const currentEmployees = pool.quary(`SELECT CONCAT (first_name,' ',last_name) AS fullname FROM employee`, (err:Error, result: QueryResult) => {
-            if (err) { 
-                console.log(err);
-            } else if (result) {
-                return result;
-            }
-        });
+    async newEmployeeCli(): Promise<void> {
+        const curRoles = await currentRoles();
+        const curEmp = await currentEmployees();
+
         inquirer.prompt([
             {
                 type: 'input',
@@ -99,23 +78,41 @@ class Cli {
                 type: 'list',
                 name: 'roleID',
                 message: 'Employee Role: ',
-                choices: [currentRoles] //check SQL for role table select title 
+                choices: curRoles 
             },
             {
                 type: 'list',
                 name: 'managerID',
-                message: 'Manager: ',
-                choices: [currentEmployees,'None'] //check SQL quary for all employee names
+                message: 'Current Manager: ',
+                choices: curEmp
             }
-        ]).then((res) => {
-            pool.quary(newEmpQ(res.firstName,res.lastName,res.roleID,res.managerID), (err:Error, result:QueryResult) => {
-                if (err) {
-                    console.log(err);
-                } else if (result) {
-                    console.log(`Employee ${res.firstName} ${res.lastName} Added!`);
-                }
-            })
-            
+        ])
+        .then((res) => {
+            newEmp(res.firstName,res.lastName,res.roleID,res.managerID);
+            this.mainMenu();
+        })
+    };
+
+    async updateEmployeeRoleCli(): Promise<void> {
+        const curRoles = await currentRoles();
+        const curEmp = await currentEmployees();
+
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'employee',
+                message: 'Select Employee to Update: ',
+                choices: curRoles
+            },
+            {
+                type: 'list',
+                name: 'newRole',
+                message: 'Select New Role: ',
+                choices: curRoles
+            }
+        ])
+        .then((res) => {
+            updateEmployeeRole(res.employee,res.newRole);
         })
     };
 };
