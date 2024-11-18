@@ -3,7 +3,7 @@ import { viewTable, updateEmployeeRole, currentEmployees, currentRoles, newEmp, 
 
 
 class Cli {
-    mainMenu(): void {
+    async mainMenu(): Promise<void> {
         inquirer.prompt([
             {
                 type: 'list',
