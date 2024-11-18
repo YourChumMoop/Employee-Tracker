@@ -1,12 +1,7 @@
 import inquirer from "inquirer";
-import { QueryResult } from 'pg';
-import { pool, connectToDb } from '../connection.js';
-import { viewTable, updateEmployeeRole, currentEmployees, currentRoles, newEmp, newDept} from './sqlQueries.js';
-await connectToDb();
+import { viewTable, updateEmployeeRole, currentEmployees, currentRoles, newEmp, newDept, newRoll} from './sqlQueries.js';
 
-//TODO create a mainMenu() where the program asks it's first question and goes back to
-    //it will have the options for VIEW ALL departments, VIEW ALL roles, VIEW ALL employees, 
-    //ADD a department, ADD a roll, ADD an employer, UPDATE employee role
+
 class Cli {
     mainMenu(): void {
         inquirer.prompt([
@@ -31,6 +26,7 @@ class Cli {
             switch (res.action) {
                 case 'View All Employees':
                     viewTable('employee');
+                    this.mainMenu;
                     break;
                 case 'Add Employee':
                     this.newEmployeeCli();
@@ -40,15 +36,17 @@ class Cli {
                     break;
                 case 'View All Departments':
                     viewTable('department');
+                    this.mainMenu;
                     break;
                 case 'Add Departments':
                     this.addDepartmentCli();
                     break;
                 case 'View All Roles':
                     viewTable('role');
+                    this.mainMenu
                     break;
                 case 'Add A Roll':
-                    //TODO addRoll()
+                    this.addRoleCli();
                     break;
                 default:
                     process.exit(0);
@@ -128,5 +126,21 @@ class Cli {
             newDept(res.newDept);
             this.mainMenu;
         });
+    };
+
+    async addRoleCli(){
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'newRoll',
+                message: 'Name of New Roll: '
+            }
+        ])
+        .then((res) => {
+            newRoll(res.newRoll);
+            this.mainMenu;
+        })
     }
 };
+
+export default Cli;
