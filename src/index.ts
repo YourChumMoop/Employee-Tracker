@@ -1,6 +1,6 @@
 
 import Cli from "./cli/Cli.js";
 
-const main = new Cli;
-
-main.mainMenu()
+const cli = new Cli;
+cli.title();
+cli.mainMenu();

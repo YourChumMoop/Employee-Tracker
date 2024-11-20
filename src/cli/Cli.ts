@@ -1,8 +1,22 @@
 import inquirer from "inquirer";
-import { viewTable, updateEmployeeRole, currentEmployees, currentRoles, newEmp, newDept, newRoll} from './sqlQueries.js';
-
+import { viewEmployeeTable, viewRoleTable, viewDepartmentTable, 
+    updateEmployeeRole, currentEmployees, currentRoles, currentDepartments,
+    newEmp, newDept, newrole} from './sqlQueries.js';
+import logo from 'asciiart-logo';
 
 class Cli {
+    title(){
+        console.log(logo({
+            name: 'Employee Manager',
+            font: 'Speed',
+            padding: 3,
+            margin: 3,
+            borderColor: 'green',
+            logoColor: 'cyan',
+        })
+        .render())
+    };
+
     async mainMenu(): Promise<void> {
         inquirer.prompt([
             {
@@ -16,17 +30,17 @@ class Cli {
                     'View All Departments',
                     'Add Departments',
                     'View All Roles',
-                    'Add A Roll',
+                    'Add A role',
                     'Exit',
                 ],
             },
         ])
-        .then((res) => {
+        .then(async (res) => {
             // Switch case statement for selecting from main menu
             switch (res.action) {
                 case 'View All Employees':
-                    viewTable('employee');
-                    this.mainMenu;
+                    await viewEmployeeTable();
+                    this.mainMenu();
                     break;
                 case 'Add Employee':
                     this.newEmployeeCli();
@@ -35,17 +49,17 @@ class Cli {
                     this.updateEmployeeRoleCli();
                     break;
                 case 'View All Departments':
-                    viewTable('department');
-                    this.mainMenu;
+                    await viewDepartmentTable();
+                    this.mainMenu();
                     break;
                 case 'Add Departments':
                     this.addDepartmentCli();
                     break;
                 case 'View All Roles':
-                    viewTable('role');
-                    this.mainMenu
+                    await viewRoleTable();
+                    this.mainMenu();
                     break;
-                case 'Add A Roll':
+                case 'Add A role':
                     this.addRoleCli();
                     break;
                 default:
@@ -85,8 +99,8 @@ class Cli {
                 choices: curEmp
             }
         ])
-        .then((res) => {
-            newEmp(res.firstName,res.lastName,res.roleID,res.managerID);
+        .then(async(res) => {
+            await newEmp(res.firstName,res.lastName,res.roleID,res.managerID);
             this.mainMenu();
         })
     };
@@ -129,15 +143,27 @@ class Cli {
     };
 
     async addRoleCli(){
+        const curDept = await currentDepartments();
         inquirer.prompt([
             {
                 type: 'input',
-                name: 'newRoll',
-                message: 'Name of New Roll: '
+                name: 'title',
+                message: 'Name of New role: '
+            },
+            {
+                type: 'input',
+                name: 'salary',
+                message: 'Salary of role: '
+            },
+            {
+                type: 'list',
+                name: 'dept',
+                message: 'Department of role: ',
+                choices: curDept
             }
         ])
-        .then((res) => {
-            newRoll(res.newRoll);
+        .then(async(res) => {
+            await newrole(res.title);
             this.mainMenu;
         })
     }
