@@ -1,4 +1,4 @@
-//import { QueryResult } from 'pg';
+import colors from 'colors';
 import { pool, connectToDb } from '../connection.js';
 await connectToDb();
 //TODO functions for building quieries for SQL database
@@ -28,14 +28,14 @@ export const newEmp = async (first_name:string,last_name:string,role_id:string,m
                 `VALUES ($1,$2,$3,$4);`,
                 [first_name,last_name,role_id,manager_id]);
             if(result){
-                console.log(`Employee ${first_name} ${last_name} Added!`);
+                console.log(colors.green.bold(`Employee ${first_name} ${last_name} Added!`));
             };
 };
 //Updates a current Employee's Role
 export async function updateEmployeeRole(empId:number,roleId:number) {
     const result = await pool.query(`UPDATE employee SET role_id = $1 WHERE id = $2`,[roleId,empId]);
     if(result){
-        console.log(`Employee Role Updated`);
+        console.log(colors.green.bold(`Employee Role Updated`));
     }
 };
 
@@ -94,11 +94,11 @@ export async function currentDepartments() {
 //Creates a new department
 export async function newDept(deptName:string) {
     const results = await pool.query(`INSERT INTO department (name) VALUES ($1)`, [deptName]);
-    if(results){console.log(`${deptName} Department Added!`);}
+    if(results){console.log(colors.green.bold(`${deptName} Department Added!`));}
 };
 
 //Creates a New role
 export async function newrole(roleName:string) {
     const results = await pool.query(`INSERT INTO role (name) VALUES ($1)`, [roleName]);
-    if(results){console.log(`${roleName} role Added!`);}
+    if(results){console.log(colors.green.bold(`${roleName} role Added!`));}
 };
