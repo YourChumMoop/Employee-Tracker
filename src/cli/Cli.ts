@@ -74,7 +74,7 @@ class Cli {
     async newEmployeeCli(): Promise<void> {
         const curRoles = await currentRoles();
         const curEmp = await currentEmployees();
-
+ 
         inquirer.prompt([
             {
                 type: 'input',
@@ -108,7 +108,8 @@ class Cli {
     async updateEmployeeRoleCli(): Promise<void> {
         const curRoles = await currentRoles();
         const curEmp = await currentEmployees();
-
+        console.table(curEmp);
+        console.table(curRoles);
         inquirer.prompt([
             {
                 type: 'list',
@@ -123,8 +124,9 @@ class Cli {
                 choices: curRoles
             }
         ])
-        .then((res) => {
-            updateEmployeeRole(res.employee,res.newRole);
+        .then(async(res) => {
+            await updateEmployeeRole(res.employee,res.newRole);
+            this.mainMenu();
         })
     };
 

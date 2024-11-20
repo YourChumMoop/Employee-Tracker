@@ -1,4 +1,4 @@
-import { QueryResult } from 'pg';
+//import { QueryResult } from 'pg';
 import { pool, connectToDb } from '../connection.js';
 await connectToDb();
 //TODO functions for building quieries for SQL database
@@ -44,65 +44,50 @@ export async function updateEmployeeRole(empId:number,roleId:number) {
     //returns an array of objects that contain every employee's full name and id.
 export async function currentEmployees() {
     const curEmp:Array<{name:string,value:number|null}> = [];
-    pool.query(`SELECT id, CONCAT (first_name,' ',last_name) AS fullname FROM employee`, (err:Error, result: QueryResult) => {
-        if (err) { 
-            console.log(err);
-        } else if (result) {
-            for(let i = 0; i < result.rows.length; i++){
-                curEmp.push(
-                    {
-                        name: result.rows[i].fullname,
-                        value: result.rows[i].id
-                    }
-                )
+    const result = await pool.query(`SELECT id, CONCAT (first_name,' ',last_name) AS fullname FROM employee`);
+    for(let i = 0; i < result.rows.length; i++){
+        curEmp.push(
+            {
+                name: result.rows[i].fullname,
+                value: result.rows[i].id
             }
-            curEmp.push(
-                {
-                    name: 'None',
-                    value: null
-                }
-            );
+        )
+    }
+    curEmp.push(
+        {
+            name: 'None',
+            value: null
         }
-    });
+    );
     return curEmp;
 };
 
     //returns an array of objects that contain every role's title and id
 export async function currentRoles() {
     const curRoles:Array<{name:string,value:number|null}> = [];
-    pool.query('SELECT title,id FROM role', (err:Error, result: QueryResult) => {
-        if (err) { 
-            console.log(err);
-        } else if (result) {
-            for(let i = 0; i < result.rows.length; i++){                   
-                curRoles.push(
-                    {
-                        name: result.rows[i].title,
-                        value: result.rows[i].id
-                    }
-                );
-                
+    const result = await pool.query('SELECT title,id FROM role');
+    for(let i = 0; i < result.rows.length; i++){                   
+        curRoles.push(
+            {
+                name: result.rows[i].title,
+                value: result.rows[i].id
             }
-        }
-    });
+        );
+        
+    }
     return curRoles;
 };
 
 export async function currentDepartments() {
     const curDept:Array<{name:string,value:number|null}> = [];
-    pool.query('SELECT title,id FROM department', (err:Error, result: QueryResult) => {
-        if (err) { 
-            console.log(err);
-        } else if (result) {
-            for(let i = 0; i < result.rows.length; i++){                   
-                curDept.push(
-                    {
-                        name: result.rows[i].title,
-                        value: result.rows[i].id
-                    });           
-            }
-        }
-    });
+    const result = await pool.query('SELECT title,id FROM department');
+    for(let i = 0; i < result.rows.length; i++){                   
+        curDept.push(
+            {
+                name: result.rows[i].title,
+                value: result.rows[i].id
+            });           
+    }
     return curDept;
 };
 
