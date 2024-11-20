@@ -7,7 +7,7 @@ import logo from 'asciiart-logo';
 class Cli {
     title(){
         console.log(logo({
-            name: 'Employee Manager',
+            name: 'Employee Tracker',
             font: 'Speed',
             padding: 3,
             margin: 3,
@@ -138,9 +138,9 @@ class Cli {
                 message: 'Name of New Department: ',
             }
         ])
-        .then((res) => {
-            newDept(res.newDept);
-            this.mainMenu;
+        .then(async(res) => {
+            await newDept(res.newDept);
+            this.mainMenu();
         });
     };
 
@@ -165,8 +165,8 @@ class Cli {
             }
         ])
         .then(async(res) => {
-            await newrole(res.title);
-            this.mainMenu;
+            await newrole(res.title,res.salary,res.dept);
+            this.mainMenu();
         })
     }
 };

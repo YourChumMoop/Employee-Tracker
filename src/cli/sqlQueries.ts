@@ -80,11 +80,11 @@ export async function currentRoles() {
 
 export async function currentDepartments() {
     const curDept:Array<{name:string,value:number|null}> = [];
-    const result = await pool.query('SELECT title,id FROM department');
+    const result = await pool.query('SELECT name,id FROM department');
     for(let i = 0; i < result.rows.length; i++){                   
         curDept.push(
             {
-                name: result.rows[i].title,
+                name: result.rows[i].name,
                 value: result.rows[i].id
             });           
     }
@@ -98,7 +98,7 @@ export async function newDept(deptName:string) {
 };
 
 //Creates a New role
-export async function newrole(roleName:string) {
-    const results = await pool.query(`INSERT INTO role (name) VALUES ($1)`, [roleName]);
+export async function newrole(roleName:string,salary:number,department:number) {
+    const results = await pool.query(`INSERT INTO role (title,salary,department_id) VALUES ($1,$2,$3)`, [roleName,salary,department]);
     if(results){console.log(colors.green.bold(`${roleName} role Added!`));}
 };
